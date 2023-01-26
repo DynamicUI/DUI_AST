@@ -3,6 +3,8 @@ mod control_flows;
 mod native_functions;
 mod variables;
 
+use ast::{AstNode, Sequence};
+
 fn main() {
-    println!("Hello, world!");
+    let sequence = vec![];
 }
