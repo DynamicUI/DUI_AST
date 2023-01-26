@@ -1,4 +1,4 @@
-use crate::{VarType, VarValue, Function, HashMap};
+use crate::{Function, HashMap, VarType, VarValue};
 
 pub fn comparaison(left: VarValue, operator: &str, right: VarValue) -> bool {
     if left.type_ != right.type_ {
@@ -21,7 +21,8 @@ pub fn comparaison(left: VarValue, operator: &str, right: VarValue) -> bool {
 
 pub fn add(left: &VarValue, right: &VarValue) -> VarValue {
     if left.type_ != right.type_ {
-        todo!("Cannot add different types");
+        //println!("{} {}", left.type_, right.type_);
+        //todo!("Cannot add different types");
     }
     match left.type_ {
         VarType::Int => VarValue {

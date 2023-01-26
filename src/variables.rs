@@ -48,6 +48,16 @@ pub enum VarType {
     String,
     Bool,
 }
+impl Display for VarType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self {
+            VarType::Int => write!(f, "int"),
+            VarType::Float => write!(f, "float"),
+            VarType::String => write!(f, "string"),
+            VarType::Bool => write!(f, "bool"),
+        }
+    }
+}
 
 /****************************** VarValue **************************************/
 pub struct VarValue {

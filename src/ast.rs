@@ -46,7 +46,7 @@ impl Value {
 pub struct Function {
     pub name: String,
     pub args: Vec<Value>,
-    pub body: Option<Vec<AstNode>>,
+    pub body: Option<Sequence>,
 }
 
 #[derive(Clone)]

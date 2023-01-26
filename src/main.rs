@@ -20,6 +20,30 @@ fn main() {
                 name: "i".to_string(),
                 value: Value::Lambda("0".to_string()),
             },
+            AstNode::FunctionDeclaration(Function {
+                name: "printI".to_string(),
+                args: vec![Value::Variable("i_ref".to_string())],
+                body: Some(Sequence {
+                    sequence: vec![
+                        AstNode::VariableAssignment {
+                            name: "string".to_string(),
+                            value: Value::FunctionCall(Function {
+                                name: "add".to_string(),
+                                args: vec![
+                                    Value::Lambda("i is equal to ".to_string()),
+                                    Value::Variable("i_ref".to_string()),
+                                ],
+                                body: None,
+                            }),
+                        },
+                        AstNode::FunctionCall(Function {
+                            name: "println".to_string(),
+                            args: vec![Value::Variable("string".to_string())],
+                            body: None,
+                        }),
+                    ],
+                }),
+            }),
             AstNode::ControlFlow(ControlFlow::WhileLoop {
                 fn_condition: Function {
                     name: "less_than".to_string(),
@@ -43,11 +67,8 @@ fn main() {
                             }),
                         },
                         AstNode::FunctionCall(Function {
-                            name: "println".to_string(),
-                            args: vec![
-                                Value::Lambda("i: ".to_string()),
-                                Value::Variable("i".to_string()),
-                            ],
+                            name: "printI".to_string(),
+                            args: vec![Value::Variable("i".to_string())],
                             body: None,
                         }),
                     ],
