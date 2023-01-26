@@ -5,8 +5,9 @@ mod variables;
 
 use ast::{AstNode, ControlFlow, Function, Sequence, Value};
 use control_flows::while_loop;
+use native_functions::{add, less_than};
 use std::collections::HashMap;
-use variables::{VarType, VarValue};
+use variables::{get_var_value, VarType, VarValue};
 
 fn main() {
     let mut functions: HashMap<String, Function> = HashMap::new();
@@ -20,25 +21,36 @@ fn main() {
             AstNode::ControlFlow(ControlFlow::WhileLoop {
                 fn_condition: Function {
                     name: "less_than".to_string(),
-                    parameters: vec!["i".to_string(), "10".to_string()],
+                    args: vec![
+                        Value::Variable("i".to_string()),
+                        Value::Lambda("10".to_string()),
+                    ],
                     body: None,
                 },
                 body: Sequence {
-                    sequence: vec![AstNode::VariableAssignment {
-                        name: "i".to_string(),
-                        value: Value::FunctionCall {
-                            name: "add".to_string(),
-                            args: vec![
-                                Value::Variable("i".to_string()),
-                                Value::Lambda("1".to_string()),
-                            ],
+                    sequence: vec![
+                        AstNode::VariableAssignment {
+                            name: "i".to_string(),
+                            value: Value::FunctionCall(Function {
+                                name: "add".to_string(),
+                                args: vec![
+                                    Value::Variable("i".to_string()),
+                                    Value::Lambda("1".to_string()),
+                                ],
+                                body: None,
+                            }),
                         },
-                    }],
+                        AstNode::FunctionCall(Function {
+                            name: "print".to_string(),
+                            args: vec![Value::Variable("i".to_string())],
+                            body: None,
+                        }),
+                    ],
                 },
             }),
             AstNode::FunctionCall(Function {
                 name: "print".to_string(),
-                parameters: vec!["i".to_string()],
+                args: vec![Value::Lambda("Fin de la boucle !".to_string())],
                 body: None,
             }),
         ],
@@ -54,7 +66,7 @@ fn execute_ast_node(
 ) {
     match node {
         AstNode::VariableAssignment { name, value } => {
-            variables::assign_variable(name, value, variables);
+            variables::assign_variable(name, value, functions, variables);
         }
         AstNode::ControlFlow(control_flow) => match control_flow {
             ControlFlow::WhileLoop { fn_condition, body } => {
@@ -62,7 +74,7 @@ fn execute_ast_node(
             }
         },
         AstNode::FunctionCall(function) => {
-            //native_functions::execute_function(function);
+            execute_function_call(function, functions, variables);
         }
         AstNode::FunctionDeclaration(function) => {
             //variables::declare_function(name, parameters, body);
@@ -81,13 +93,61 @@ fn execute_sequence(
 }
 
 fn execute_function_call(
-    name: &str,
-    args: &Vec<Value>,
+    function: &Function,
+    functions: &mut HashMap<String, Function>,
     variables: &mut HashMap<String, VarValue>,
 ) -> Option<VarValue> {
-    if name == "print" {
-        println!("print(), whit {} args", args.len());
+    match &function.name as &str {
+        "print" => {
+            if function.args.len() == 0 {
+                println!();
+            }
+            for arg in function.args.iter() {
+                let value = arg.get_value(variables, functions);
+                match value.type_ {
+                    VarType::String => {
+                        println!("{}", value);
+                    }
+                    VarType::Int => {
+                        println!("{}", value);
+                    }
+                    VarType::Float => {
+                        println!("{}", value);
+                    }
+                    VarType::Bool => {
+                        println!("{}", value);
+                    }
+                }
+            }
+            return None;
+        }
+        "less_than" => {
+            if function.args.len() != 2 {
+                panic!("less_than function takes 2 arguments");
+            }
+            let left = function.args[0].get_value(variables, functions);
+            let right = function.args[1].get_value(variables, functions);
+            return Some(VarValue::from(less_than(left, right)));
+        }
+        "add" => {
+            if function.args.len() != 2 {
+                panic!(
+                    "add function takes 2 arguments (and not {})",
+                    function.args.len()
+                );
+            }
+            let left = function.args[0].get_value(variables, functions);
+            let right = function.args[1].get_value(variables, functions);
+            return Some(VarValue::from(add(&left, &right)));
+        }
+        _ => {}
     }
-    // first check if it's a native function
+
+    if functions.contains_key(&function.name) {
+        println!("Function {} found", function.name);
+    } else {
+        println!("Function {} not found", function.name);
+    }
+
     None
 }

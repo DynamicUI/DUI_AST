@@ -1,4 +1,4 @@
-use crate::{execute_sequence, Function, HashMap, Sequence, VarValue};
+use crate::{execute_function_call, execute_sequence, Function, HashMap, Sequence, VarValue};
 
 pub fn while_loop(
     comparator: &Function,
@@ -7,8 +7,23 @@ pub fn while_loop(
     variables: &mut HashMap<String, VarValue>,
 ) {
     let mut i = 0;
-    while true {
+    loop {
+        match execute_function_call(comparator, functions, variables) {
+            Some(value) => {
+                if value.value == "true" {
+                    execute_sequence(sequence, functions, variables);
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+            None => {
+                panic!("Function call failed");
+            }
+        }
+
         execute_sequence(sequence, functions, variables);
+
         if i >= 100 {
             println!(
                 "Infinite loop detected ! (more than {}, see in parameters to change the max)",

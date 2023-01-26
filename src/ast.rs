@@ -1,3 +1,5 @@
+use crate::{execute_function_call, get_var_value, HashMap, VarValue};
+
 pub enum AstNode {
     VariableAssignment { name: String, value: Value },
     ControlFlow(ControlFlow),
@@ -10,14 +12,35 @@ pub struct Sequence {
 }
 
 pub enum Value {
-    FunctionCall { name: String, args: Vec<Value> },
+    FunctionCall(Function),
     Variable(String),
     Lambda(String),
 }
 
+impl Value {
+    pub fn get_value(
+        &self,
+        variables: &mut HashMap<String, VarValue>,
+        functions: &mut HashMap<String, Function>,
+    ) -> VarValue {
+        return match self {
+            Value::Variable(name) => get_var_value(name, variables),
+            Value::Lambda(value) => VarValue::from(value.clone()),
+            Value::FunctionCall(function) => {
+                match execute_function_call(function, functions, variables) {
+                    Some(value) => value,
+                    None => {
+                        panic!("Function call failed");
+                    }
+                }
+            }
+        };
+    }
+}
+
 pub struct Function {
     pub name: String,
-    pub parameters: Vec<String>,
+    pub args: Vec<Value>,
     pub body: Option<Vec<AstNode>>,
 }
 

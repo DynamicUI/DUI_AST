@@ -9,7 +9,7 @@ pub enum ComparaisonOperator {
     NotEqual,
 }
 
-pub fn comparaison(left: VarValue, operator: ComparaisonOperator, right: VarValue) -> bool {
+fn comparaison(left: VarValue, operator: ComparaisonOperator, right: VarValue) -> bool {
     if left.type_ != right.type_ {
         panic!("Comparaison between different types");
     }
@@ -22,9 +22,14 @@ pub fn comparaison(left: VarValue, operator: ComparaisonOperator, right: VarValu
                 left.value.parse::<f32>().unwrap() < right.value.parse::<f32>().unwrap()
             }
             VarType::String => panic!("Cannot compare strings"),
+            VarType::Bool => panic!("Cannot compare booleans"),
         },
         _ => false,
     }
+}
+
+pub fn less_than(left: VarValue, right: VarValue) -> bool {
+    comparaison(left, ComparaisonOperator::LessThan, right)
 }
 
 pub fn add(left: &VarValue, right: &VarValue) -> VarValue {
@@ -49,5 +54,6 @@ pub fn add(left: &VarValue, right: &VarValue) -> VarValue {
             type_: VarType::String,
             is_type_enforced: false,
         },
+        VarType::Bool => panic!("Cannot add booleans"),
     }
 }

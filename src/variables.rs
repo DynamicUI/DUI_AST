@@ -1,4 +1,4 @@
-use crate::{execute_function_call, Value};
+use crate::{execute_function_call, Function, Value};
 use core::fmt::Display;
 use core::fmt::Formatter;
 use std::collections::HashMap;
@@ -7,20 +7,23 @@ use std::collections::HashMap;
 pub fn assign_variable(
     var_name: &String,
     value: &Value,
+    functions: &mut HashMap<String, Function>,
     variables: &mut HashMap<String, VarValue>,
 ) {
     match value {
         Value::Lambda(value) => {
             variables.insert(var_name.clone(), VarValue::from(value.clone()));
         }
-        Value::FunctionCall { name, args } => match execute_function_call(name, args, variables) {
-            Some(value) => {
-                variables.insert(var_name.clone(), value);
+        Value::FunctionCall(function) => {
+            match execute_function_call(function, functions, variables) {
+                Some(value) => {
+                    variables.insert(var_name.clone(), value);
+                }
+                None => {
+                    panic!("Function call failed");
+                }
             }
-            None => {
-                panic!("Function call failed");
-            }
-        },
+        }
         Value::Variable(name) => {
             variables.insert(var_name.clone(), VarValue::clone_var(name, variables));
         }
@@ -40,6 +43,7 @@ pub enum VarType {
     Int,
     Float,
     String,
+    Bool,
 }
 
 /****************************** VarValue **************************************/
@@ -62,6 +66,16 @@ impl Clone for VarValue {
 impl VarValue {
     fn clone_var(var_name: &String, variables: &HashMap<String, VarValue>) -> VarValue {
         get_var_value(var_name, variables)
+    }
+}
+
+impl From<bool> for VarValue {
+    fn from(value: bool) -> Self {
+        VarValue {
+            value: value.to_string(),
+            type_: VarType::Bool,
+            is_type_enforced: true,
+        }
     }
 }
 
