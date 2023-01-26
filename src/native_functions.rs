@@ -1,48 +1,60 @@
-use crate::{Function, HashMap, VarType, VarValue};
+#[allow(unused_imports)]
+use crate::{FunctionCall, FunctionsMap, Value, VarType, Variable, VariablesMap};
 
-pub fn comparaison(left: VarValue, operator: &str, right: VarValue) -> bool {
-    if left.type_ != right.type_ {
-        todo!("Comparaison between different types");
+#[allow(dead_code, unused_variables)]
+pub fn comparaison(left: Variable, operator: &str, right: Variable) -> bool {
+    match (left.enforced_type, right.enforced_type) {
+        (Some(left_type), Some(right_type)) => {
+            if left_type != right_type {
+                todo!("Type mismatch: {:?} and {:?}", left_type, right_type);
+            }
+        }
+        (Some(left_type), None) => {}
+        (None, Some(right_type)) => {}
+        (None, None) => {}
     }
+
     match operator {
-        "less_than" => match left.type_ {
-            VarType::Int => {
-                left.value.parse::<i32>().unwrap() < right.value.parse::<i32>().unwrap()
-            }
-            VarType::Float => {
-                left.value.parse::<f32>().unwrap() < right.value.parse::<f32>().unwrap()
-            }
-            VarType::String => todo!("Cannot compare strings"),
-            VarType::Bool => todo!("Cannot compare booleans"),
+        "less_than" => match left.value {
+            Value::Int(left_value) => left_value < right.value.parse::<i32>().unwrap(),
+            Value::Float(left_value) => left_value < right.value.parse::<f32>().unwrap(),
+            Value::String(left_value) => todo!("Comparaison between strings"),
+            Value::Bool(left_value) => todo!("Comparaison between booleans"),
+            Value::Tuple(left_value) => todo!("Comparaison between tuples"),
+            Value::Array(left_value) => todo!("Comparaison between arrays"),
         },
         _ => false,
     }
 }
 
-pub fn add(left: &VarValue, right: &VarValue) -> VarValue {
-    if left.type_ != right.type_ {
-        //println!("{} {}", left.type_, right.type_);
-        //todo!("Cannot add different types");
+#[allow(dead_code, unused_variables)]
+pub fn add(left: &Variable, right: &Variable) -> Variable {
+    match (&left.enforced_type, &right.enforced_type) {
+        (Some(left_type), Some(right_type)) => {
+            if left_type != right_type {
+                //todo!("Type mismatch: {:?} and {:?}", left_type, right_type);
+            }
+        }
+        (Some(left_type), None) => {}
+        (None, Some(right_type)) => {}
+        (None, None) => {}
     }
-    match left.type_ {
-        VarType::Int => VarValue {
-            value: (left.value.parse::<i32>().unwrap() + right.value.parse::<i32>().unwrap())
-                .to_string(),
-            type_: VarType::Int,
-            is_type_enforced: false,
+    match &left.value {
+        Value::Int(left_value) => Variable {
+            value: Value::Int(left_value + right.value.parse::<i32>().unwrap()),
+            enforced_type: Some(VarType::Int),
         },
-        VarType::Float => VarValue {
-            value: (left.value.parse::<f32>().unwrap() + right.value.parse::<f32>().unwrap())
-                .to_string(),
-            type_: VarType::Float,
-            is_type_enforced: false,
+        Value::Float(left_value) => Variable {
+            value: Value::Float(left_value + right.value.parse::<f32>().unwrap()),
+            enforced_type: Some(VarType::Float),
         },
-        VarType::String => VarValue {
-            value: format!("{}{}", left.value, right.value),
-            type_: VarType::String,
-            is_type_enforced: false,
+        Value::String(left_value) => Variable {
+            value: Value::String(format!("{}{}", left_value, right.value)),
+            enforced_type: Some(VarType::String),
         },
-        VarType::Bool => todo!("Cannot add booleans"),
+        Value::Bool(left_value) => todo!("Addition between booleans"),
+        Value::Tuple(left_value) => todo!("Addition between tuples"),
+        Value::Array(left_value) => todo!("Addition between arrays"),
     }
 }
 
@@ -63,14 +75,14 @@ pub fn is_native_function(name: &str) -> bool {
 }
 
 pub fn execute_native_function(
-    function: &Function,
-    functions: &mut HashMap<String, Function>,
-    variables: &mut HashMap<String, VarValue>,
-) -> Result<Option<VarValue>, ()> {
+    function: &FunctionCall,
+    functions: &mut FunctionsMap,
+    variables: &mut VariablesMap,
+) -> Result<Option<Variable>, ()> {
     match &function.name as &str {
         "print" | "println" => {
             for arg in function.args.iter() {
-                let value = arg.get_value(variables, functions);
+                let value = arg.get_value(functions, variables);
                 print!("{}", value);
             }
             if function.name == "println" {
@@ -87,9 +99,9 @@ pub fn execute_native_function(
             if function.args.len() != 2 {
                 todo!("{} function takes 2 arguments", function.name);
             }
-            let left = function.args[0].get_value(variables, functions);
-            let right = function.args[1].get_value(variables, functions);
-            return Ok(Some(VarValue::from(comparaison(
+            let left = function.args[0].get_value(functions, variables);
+            let right = function.args[1].get_value(functions, variables);
+            return Ok(Some(Variable::from(comparaison(
                 left,
                 &function.name,
                 right,
@@ -102,9 +114,9 @@ pub fn execute_native_function(
                     function.args.len()
                 );
             }
-            let left = function.args[0].get_value(variables, functions);
-            let right = function.args[1].get_value(variables, functions);
-            return Ok(Some(VarValue::from(add(&left, &right))));
+            let left = function.args[0].get_value(functions, variables);
+            let right = function.args[1].get_value(functions, variables);
+            return Ok(Some(Variable::from(add(&left, &right))));
         }
         _ => {}
     }

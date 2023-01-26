@@ -1,83 +1,81 @@
+#[allow(unused_imports)]
 mod ast;
 mod control_flows;
 mod functions;
 mod native_functions;
 mod variables;
 
-use ast::{AstNode, ControlFlow, Function, Sequence, Value};
+use ast::{
+    AstNode, ControlFlow, FunctionCall, FunctionSignature, FunctionsMap, Sequence, ValueGetter,
+    VariablesMap,
+};
 use control_flows::while_loop;
 use functions::{declare_function, execute_function_call};
 use native_functions::{execute_native_function, is_native_function};
 use std::collections::HashMap;
-use variables::{get_var_value, VarType, VarValue};
+use variables::{get_var_value, Value, VarType, Variable};
 
 fn main() {
-    let mut functions: HashMap<String, Function> = HashMap::new();
-    let mut variables: HashMap<String, VarValue> = HashMap::new();
+    let mut functions: FunctionsMap = FunctionsMap(HashMap::new());
+    let mut variables: VariablesMap = VariablesMap(HashMap::new());
     let sequence = Sequence {
         sequence: vec![
             AstNode::VariableAssignment {
                 name: "i".to_string(),
-                value: Value::Lambda("0".to_string()),
+                value: ValueGetter::Lambda("0".to_string()),
             },
-            AstNode::FunctionDeclaration(Function {
+            AstNode::FunctionDeclaration(FunctionSignature {
                 name: "printI".to_string(),
-                args: vec![Value::Variable("i_ref".to_string())],
-                body: Some(Sequence {
+                args: HashMap::from([("i_ref".to_string(), Some(Variable::from(0)))]),
+                body: Sequence {
                     sequence: vec![
                         AstNode::VariableAssignment {
                             name: "string".to_string(),
-                            value: Value::FunctionCall(Function {
+                            value: ValueGetter::FunctionCall(FunctionCall {
                                 name: "add".to_string(),
                                 args: vec![
-                                    Value::Lambda("i is equal to ".to_string()),
-                                    Value::Variable("i_ref".to_string()),
+                                    ValueGetter::Lambda("i is equal to ".to_string()),
+                                    ValueGetter::Variable("i_ref".to_string()),
                                 ],
-                                body: None,
                             }),
                         },
-                        AstNode::FunctionCall(Function {
+                        AstNode::FunctionCall(FunctionCall {
                             name: "println".to_string(),
-                            args: vec![Value::Variable("string".to_string())],
-                            body: None,
+                            args: vec![ValueGetter::Variable("string".to_string())],
                         }),
                     ],
-                }),
+                },
             }),
             AstNode::ControlFlow(ControlFlow::WhileLoop {
-                fn_condition: Function {
+                fn_condition: FunctionCall {
                     name: "less_than".to_string(),
                     args: vec![
-                        Value::Variable("i".to_string()),
-                        Value::Lambda("10".to_string()),
+                        ValueGetter::Variable("i".to_string()),
+                        ValueGetter::Lambda("10".to_string()),
                     ],
-                    body: None,
                 },
                 body: Sequence {
                     sequence: vec![
                         AstNode::VariableAssignment {
                             name: "i".to_string(),
-                            value: Value::FunctionCall(Function {
+                            value: ValueGetter::FunctionCall(FunctionCall {
                                 name: "add".to_string(),
                                 args: vec![
-                                    Value::Variable("i".to_string()),
-                                    Value::Lambda("1".to_string()),
+                                    ValueGetter::Variable("i".to_string()),
+                                    ValueGetter::Lambda("1".to_string()),
                                 ],
-                                body: None,
                             }),
                         },
-                        AstNode::FunctionCall(Function {
+                        AstNode::FunctionCall(FunctionCall {
                             name: "printI".to_string(),
-                            args: vec![Value::Variable("i".to_string())],
-                            body: None,
+                            args: vec![ValueGetter::Variable("i".to_string())],
                         }),
                     ],
                 },
             }),
-            AstNode::FunctionCall(Function {
+            AstNode::FunctionCall(FunctionCall {
                 name: "println".to_string(),
-                args: vec![Value::Lambda("Fin de la boucle !".to_string())],
-                body: None,
+                args: vec![ValueGetter::Lambda("Fin de la boucle !".to_string())],
             }),
         ],
     };
@@ -85,11 +83,7 @@ fn main() {
     execute_sequence(&sequence, &mut functions, &mut variables);
 }
 
-fn execute_ast_node(
-    node: &AstNode,
-    functions: &mut HashMap<String, Function>,
-    variables: &mut HashMap<String, VarValue>,
-) {
+fn execute_ast_node(node: &AstNode, functions: &mut FunctionsMap, variables: &mut VariablesMap) {
     match node {
         AstNode::VariableAssignment { name, value } => {
             variables::assign_variable(name, value, functions, variables);
@@ -115,8 +109,8 @@ fn execute_ast_node(
 
 fn execute_sequence(
     sequence: &Sequence,
-    functions: &mut HashMap<String, Function>,
-    variables: &mut HashMap<String, VarValue>,
+    functions: &mut FunctionsMap,
+    variables: &mut VariablesMap,
 ) {
     for node in sequence.sequence.iter() {
         execute_ast_node(node, functions, variables);

@@ -1,22 +1,29 @@
-use crate::{execute_function_call, execute_sequence, Function, HashMap, Sequence, VarValue};
+#[allow(unused_imports)]
+use crate::{
+    execute_function_call, execute_sequence, FunctionCall, FunctionsMap, Sequence, Value,
+    VariablesMap,
+};
 
 pub fn while_loop(
-    comparator: &Function,
+    comparator: &FunctionCall,
     sequence: &Sequence,
-    functions: &mut HashMap<String, Function>,
-    variables: &mut HashMap<String, VarValue>,
+    functions: &mut FunctionsMap,
+    variables: &mut VariablesMap,
 ) {
     let mut i = 0;
     loop {
         match execute_function_call(comparator, functions, variables) {
-            Ok(Some(value)) => {
-                if value.value == "true" {
-                    execute_sequence(sequence, functions, variables);
-                    i += 1;
-                } else {
-                    break;
+            Ok(Some(variable)) => match variable.value {
+                Value::Bool(value) => {
+                    if value {
+                        execute_sequence(sequence, functions, variables);
+                        i += 1;
+                    } else {
+                        break;
+                    }
                 }
-            }
+                _ => todo!("while loop condition must return a boolean"),
+            },
             Ok(None) => {
                 todo!("While loop comparator must return a value");
             }

@@ -1,11 +1,11 @@
-use crate::{execute_function_call, get_var_value, HashMap, VarValue};
+use crate::{execute_function_call, get_var_value, HashMap, Variable};
 
 #[derive(Clone)]
 pub enum AstNode {
-    VariableAssignment { name: String, value: Value },
+    VariableAssignment { name: String, value: ValueGetter },
     ControlFlow(ControlFlow),
-    FunctionDeclaration(Function),
-    FunctionCall(Function),
+    FunctionDeclaration(FunctionSignature),
+    FunctionCall(FunctionCall),
 }
 
 #[derive(Clone)]
@@ -14,22 +14,25 @@ pub struct Sequence {
 }
 
 #[derive(Clone)]
-pub enum Value {
-    FunctionCall(Function),
+pub enum ValueGetter {
+    FunctionCall(FunctionCall),
     Variable(String),
     Lambda(String),
 }
 
-impl Value {
+pub struct FunctionsMap(pub HashMap<String, FunctionSignature>);
+pub struct VariablesMap(pub HashMap<String, Variable>);
+
+impl ValueGetter {
     pub fn get_value(
         &self,
-        variables: &mut HashMap<String, VarValue>,
-        functions: &mut HashMap<String, Function>,
-    ) -> VarValue {
+        functions: &mut FunctionsMap,
+        variables: &mut VariablesMap,
+    ) -> Variable {
         return match self {
-            Value::Variable(name) => get_var_value(name, variables),
-            Value::Lambda(value) => VarValue::from(value.clone()),
-            Value::FunctionCall(function) => {
+            ValueGetter::Variable(name) => get_var_value(name, variables),
+            ValueGetter::Lambda(value) => Variable::from(value.clone()),
+            ValueGetter::FunctionCall(function) => {
                 match execute_function_call(function, functions, variables) {
                     Ok(Some(value)) => value,
                     Ok(None) => {
@@ -43,16 +46,22 @@ impl Value {
 }
 
 #[derive(Clone)]
-pub struct Function {
+pub struct FunctionCall {
     pub name: String,
-    pub args: Vec<Value>,
-    pub body: Option<Sequence>,
+    pub args: Vec<ValueGetter>,
+}
+
+#[derive(Clone)]
+pub struct FunctionSignature {
+    pub name: String,
+    pub args: HashMap<String, Option<Variable>>,
+    pub body: Sequence,
 }
 
 #[derive(Clone)]
 pub enum ControlFlow {
     WhileLoop {
-        fn_condition: Function,
+        fn_condition: FunctionCall,
         body: Sequence,
     },
 }
