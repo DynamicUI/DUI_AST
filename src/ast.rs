@@ -1,24 +1,29 @@
 pub enum AstNode {
     VariableAssignment {
         name: String,
-        value: Box<AstNode>,
-    },
-    FunctionDeclaration {
-        name: String,
-        parameters: Vec<String>,
-        body: Vec<AstNode>,
-    },
-    FunctionCall {
-        name: String,
-        parameters: Vec<AstNode>,
+        value: Value,
     },
     ControlFlow {
-        condition_function_name: String,
+        fn_condition: Function,
         body: Vec<AstNode>,
     },
+    FunctionDeclaration(Function),
+
+    FunctionCall(Function),
 }
-impl AstNode {}
 
 pub struct Sequence {
     pub sequence: Vec<AstNode>,
+}
+
+pub enum Value {
+    FunctionCall { name: String, args: Vec<Value> },
+    Variable(String),
+    Lambda(String),
+}
+
+pub struct Function {
+    pub name: String,
+    pub parameters: Vec<String>,
+    pub body: Option<Vec<AstNode>>,
 }
