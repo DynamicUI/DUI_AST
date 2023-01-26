@@ -1,5 +1,6 @@
 use crate::{execute_function_call, get_var_value, HashMap, VarValue};
 
+#[derive(Clone)]
 pub enum AstNode {
     VariableAssignment { name: String, value: Value },
     ControlFlow(ControlFlow),
@@ -7,10 +8,12 @@ pub enum AstNode {
     FunctionCall(Function),
 }
 
+#[derive(Clone)]
 pub struct Sequence {
     pub sequence: Vec<AstNode>,
 }
 
+#[derive(Clone)]
 pub enum Value {
     FunctionCall(Function),
     Variable(String),
@@ -28,22 +31,25 @@ impl Value {
             Value::Lambda(value) => VarValue::from(value.clone()),
             Value::FunctionCall(function) => {
                 match execute_function_call(function, functions, variables) {
-                    Some(value) => value,
-                    None => {
-                        panic!("Function call failed");
+                    Ok(Some(value)) => value,
+                    Ok(None) => {
+                        todo!("Cannot assign a function call without return value to a variable")
                     }
+                    Err(_) => todo!("Function call failed"),
                 }
             }
         };
     }
 }
 
+#[derive(Clone)]
 pub struct Function {
     pub name: String,
     pub args: Vec<Value>,
     pub body: Option<Vec<AstNode>>,
 }
 
+#[derive(Clone)]
 pub enum ControlFlow {
     WhileLoop {
         fn_condition: Function,

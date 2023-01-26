@@ -9,7 +9,7 @@ pub fn while_loop(
     let mut i = 0;
     loop {
         match execute_function_call(comparator, functions, variables) {
-            Some(value) => {
+            Ok(Some(value)) => {
                 if value.value == "true" {
                     execute_sequence(sequence, functions, variables);
                     i += 1;
@@ -17,8 +17,11 @@ pub fn while_loop(
                     break;
                 }
             }
-            None => {
-                panic!("Function call failed");
+            Ok(None) => {
+                todo!("While loop comparator must return a value");
+            }
+            Err(_) => {
+                todo!("Function call failed");
             }
         }
 

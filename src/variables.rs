@@ -16,11 +16,14 @@ pub fn assign_variable(
         }
         Value::FunctionCall(function) => {
             match execute_function_call(function, functions, variables) {
-                Some(value) => {
+                Ok(Some(value)) => {
                     variables.insert(var_name.clone(), value);
                 }
-                None => {
-                    panic!("Function call failed");
+                Ok(None) => {
+                    todo!("Cannot assign a function call without return value to a variable");
+                }
+                Err(_) => {
+                    todo!("Function call failed");
                 }
             }
         }
@@ -33,7 +36,7 @@ pub fn assign_variable(
 pub fn get_var_value(var_name: &String, variables: &HashMap<String, VarValue>) -> VarValue {
     match variables.get(var_name) {
         Some(var_value) => var_value.clone(),
-        None => panic!("Variable {} not found", var_name),
+        None => todo!("Variable {} not found", var_name),
     }
 }
 
