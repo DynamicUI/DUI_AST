@@ -85,6 +85,9 @@ fn execute_function_call(
     args: &Vec<Value>,
     variables: &mut HashMap<String, VarValue>,
 ) -> Option<VarValue> {
+    if name == "print" {
+        println!("print(), whit {} args", args.len());
+    }
     // first check if it's a native function
     None
 }

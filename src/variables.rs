@@ -61,10 +61,7 @@ impl Clone for VarValue {
 
 impl VarValue {
     fn clone_var(var_name: &String, variables: &HashMap<String, VarValue>) -> VarValue {
-        match variables.get(var_name) {
-            Some(var_value) => var_value.clone(),
-            None => panic!("Variable {} not found", var_name),
-        }
+        get_var_value(var_name, variables)
     }
 }
 
