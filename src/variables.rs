@@ -1,20 +1,33 @@
+use crate::{execute_function_call, Value};
 use core::fmt::Display;
 use core::fmt::Formatter;
 use std::collections::HashMap;
 
 /********************************* Methods ************************************/
-pub fn assign_var(
-    var_name: &VarName,
-    var_value: &VarValue,
-    variables: &mut HashMap<VarName, VarValue>,
+pub fn assign_variable(
+    var_name: &String,
+    value: &Value,
+    variables: &mut HashMap<String, VarValue>,
 ) {
-    variables.insert(var_name.clone(), var_value.clone());
-    if variables.contains_key(&VarName::from("i")) {
-        println!("i is {}", variables.get(&VarName::from("i")).unwrap());
+    match value {
+        Value::Lambda(value) => {
+            variables.insert(var_name.clone(), VarValue::from(value.clone()));
+        }
+        Value::FunctionCall { name, args } => match execute_function_call(name, args, variables) {
+            Some(value) => {
+                variables.insert(var_name.clone(), value);
+            }
+            None => {
+                panic!("Function call failed");
+            }
+        },
+        Value::Variable(name) => {
+            variables.insert(var_name.clone(), VarValue::clone_var(name, variables));
+        }
     }
 }
 
-pub fn get_var_value(var_name: &VarName, variables: &HashMap<VarName, VarValue>) -> VarValue {
+pub fn get_var_value(var_name: &String, variables: &HashMap<String, VarValue>) -> VarValue {
     match variables.get(var_name) {
         Some(var_value) => var_value.clone(),
         None => panic!("Variable {} not found", var_name),
@@ -46,6 +59,15 @@ impl Clone for VarValue {
     }
 }
 
+impl VarValue {
+    fn clone_var(var_name: &String, variables: &HashMap<String, VarValue>) -> VarValue {
+        match variables.get(var_name) {
+            Some(var_value) => var_value.clone(),
+            None => panic!("Variable {} not found", var_name),
+        }
+    }
+}
+
 impl From<&str> for VarValue {
     fn from(s: &str) -> Self {
         let var_type: VarType = match s.parse::<i32>() {
@@ -73,26 +95,5 @@ impl From<String> for VarValue {
 impl Display for VarValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
-    }
-}
-
-/****************************** VarName ***************************************/
-#[derive(PartialEq, Eq, Hash)]
-pub struct VarName(pub String);
-impl From<&str> for VarName {
-    fn from(s: &str) -> Self {
-        VarName(s.to_string())
-    }
-}
-
-impl Display for VarName {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Clone for VarName {
-    fn clone(&self) -> Self {
-        VarName(self.0.clone())
     }
 }
