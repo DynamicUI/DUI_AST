@@ -1,5 +1,25 @@
 use core::fmt::Display;
 use core::fmt::Formatter;
+use std::collections::HashMap;
+
+/********************************* Methods ************************************/
+pub fn assign_var(
+    var_name: &VarName,
+    var_value: &VarValue,
+    variables: &mut HashMap<VarName, VarValue>,
+) {
+    variables.insert(var_name.clone(), var_value.clone());
+    if variables.contains_key(&VarName::from("i")) {
+        println!("i is {}", variables.get(&VarName::from("i")).unwrap());
+    }
+}
+
+pub fn get_var_value(var_name: &VarName, variables: &HashMap<VarName, VarValue>) -> VarValue {
+    match variables.get(var_name) {
+        Some(var_value) => var_value.clone(),
+        None => panic!("Variable {} not found", var_name),
+    }
+}
 
 /****************************** VarType ***************************************/
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
