@@ -21,9 +21,17 @@ pub fn draw_sequencer(d: &mut RaylibDrawHandle) {
 }
 
 pub enum Block {
-    VariableAssignment,
-    FunctionCall,
+    VariableAssignment(VariableAssignment),
+    FunctionCall(FunctionCall),
 }
+
+/*
+pub enum ValueGetter {
+    Variable(String),
+    Lambda(String),
+    FunctionCall(FunctionCall),
+}
+*/
 
 pub struct State {
     pub last_index: usize,
@@ -40,7 +48,16 @@ pub fn main_loop() {
         .undecorated()
         .build();
 
-    let mut blocks = vec![Block::VariableAssignment, Block::FunctionCall];
+    let mut state = State {
+        last_index: 0,
+        selected: None,
+        n_blocks: 0,
+    };
+
+    let mut blocks = vec![
+        Block::VariableAssignment(VariableAssignment::new(&mut state)),
+        Block::FunctionCall(FunctionCall::new("print".to_string(), vec![], &mut state)),
+    ];
 
     let buttons = vec![
         Button::new(
@@ -67,10 +84,20 @@ pub fn main_loop() {
         }
         d.clear_background(Color::WHITE);
         draw_sequencer(&mut d);
-        for block in blocks.iter() {
+
+        // focus handling
+        if d.is_key_pressed(KeyboardKey::KEY_TAB) {
+            state.selected = match state.selected {
+                Some(i) => Some((i + 1) % state.last_index),
+                None => Some(0),
+            };
+            println!("selected: {:?}, last_index: {}", state.selected, state.last_index);
+        }
+
+        for block in &mut blocks {
             match block {
-                Block::VariableAssignment => {}
-                Block::FunctionCall => {}
+                Block::VariableAssignment(va) => va.draw(&mut d, &mut state),
+                Block::FunctionCall(fc) => fc.draw(&mut d, &mut state),
             }
         }
         for button in buttons.iter() {
