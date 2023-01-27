@@ -25,4 +25,8 @@ impl VariableAssignment {
         self.block.draw(d);
         self.name_input.draw(d, state);
     }
+
+    pub fn update(&mut self, _d: &mut RaylibDrawHandle, state: &mut State) {
+        self.name_input.update(state);
+    }
 }

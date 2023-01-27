@@ -16,9 +16,12 @@ impl Block {
         }
     }
 
-    // translate
     pub fn set_position(&mut self, position: Vector2) {
         self.position = position;
+    }
+
+    pub fn translate(&mut self, translation: Vector2) {
+        self.position += translation;
     }
 
     pub fn is_point_colliding(&self, point: Vector2) -> bool {

@@ -1,7 +1,5 @@
 #[allow(unused_imports)]
-use super::{
-    ActionBlock, ActionBlockTrait, Block, Button, FunctionCall, State, VariableAssignment,
-};
+use super::{ActionBlock, Block, Button, FunctionCall, State, VariableAssignment};
 use raylib::input::key_from_i32;
 use raylib::prelude::*;
 
@@ -46,13 +44,23 @@ impl TextInput {
         }
     }
 
-    pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &State) {
-        let mut tmp_bg_color = Color::LIGHTGRAY;
+    pub fn update(&mut self, state: &mut State) {
         if state.selected == Some(self.index) {
             self.get_input();
-            tmp_bg_color = Color::WHITE;
         }
-        d.draw_rectangle_rounded(self.block.get_rectangle(), 0.2, 0, tmp_bg_color);
+    }
+
+    pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &State) {
+        d.draw_rectangle_rounded(
+            self.block.get_rectangle(),
+            0.2,
+            0,
+            if state.selected == Some(self.index) {
+                Color::WHITE
+            } else {
+                Color::LIGHTGRAY
+            },
+        );
         d.draw_text(
             &self.text,
             self.block.position.x as i32 + 5,

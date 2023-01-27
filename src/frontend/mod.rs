@@ -6,7 +6,7 @@ mod function;
 mod text_input;
 mod variable;
 
-use action_block::{ActionBlock, ActionBlockTrait};
+use action_block::ActionBlock;
 use block::Block;
 use button::Button;
 use function::FunctionCall;
@@ -40,18 +40,27 @@ fn init() -> (
 
     let buttons = vec![
         Button::new(
-            Vector2::new(10., 10.),
-            Vector2::new(100., 40.),
+            Block::new(
+                Vector2::new(10., 10.),
+                Vector2::new(100., 40.),
+                Color::LIGHTGRAY,
+            ),
             "Exit".to_string(),
         ),
         Button::new(
-            Vector2::new(10., 60.),
-            Vector2::new(100., 40.),
+            Block::new(
+                Vector2::new(10., 60.),
+                Vector2::new(100., 40.),
+                Color::LIGHTGRAY,
+            ),
             "Run".to_string(),
         ),
         Button::new(
-            Vector2::new(10., 110.),
-            Vector2::new(100., 40.),
+            Block::new(
+                Vector2::new(10., 110.),
+                Vector2::new(100., 40.),
+                Color::LIGHTGRAY,
+            ),
             "Add".to_string(),
         ),
     ];
@@ -121,6 +130,7 @@ pub fn main_loop() {
         d.clear_background(Color::WHITE);
         handle_focus(&mut d, &mut state);
         blocks.iter_mut().for_each(|b| b.draw(&mut d, &mut state));
+        blocks.iter_mut().for_each(|b| b.update(&mut d, &mut state));
         buttons.iter().for_each(|b| b.draw(&mut d));
         handle_button(&buttons, &mut d, &mut state, &mut blocks);
     }
