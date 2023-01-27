@@ -33,9 +33,19 @@ macro_rules! block_match {
     };
 }
 
+macro_rules! all_match {
+    ($block:ident, $e:expr, $($type:ident),*) => {
+        match $block {
+            $(Block::$type(va) => $e),*
+        }
+    };
+}
+
 impl Block {
     pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
-        block_match!(self, d, state, VariableAssignment, FunctionCall);
+        //block_match!(self, d, state, VariableAssignment, FunctionCall);
+        let mut va = VariableAssignment::new(state);
+        all_match!(self, {va.draw(d, state)}, VariableAssignment, FunctionCall);
     }
 }
 
