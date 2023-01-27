@@ -1,7 +1,7 @@
 use super::{text_input::TextInput, State, SEQUENCER_POS};
 use raylib::prelude::*;
 
-pub struct Variable {
+pub struct VariableAssignment {
     pub name: String,
     pub value: String,
     pub name_input: TextInput,
@@ -13,7 +13,7 @@ pub struct Variable {
     //active: bool,
 }
 
-impl Variable {
+impl VariableAssignment {
     pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
         let gray_level = 80;
         d.draw_rectangle_rounded(
@@ -27,7 +27,7 @@ impl Variable {
     }
 }
 
-impl Variable {
+impl VariableAssignment {
     pub fn new(state: &mut State) -> Self {
         state.last_index += 2;
         state.n_blocks += 1;
