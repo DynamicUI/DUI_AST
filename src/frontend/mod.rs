@@ -56,7 +56,7 @@ pub fn main_loop() {
 
     let mut blocks = vec![
         Block::VariableAssignment(VariableAssignment::new(&mut state)),
-        Block::FunctionCall(FunctionCall::new("print".to_string(), vec![], &mut state)),
+        Block::FunctionCall(FunctionCall::new(&mut state)),
     ];
 
     let buttons = vec![
@@ -77,7 +77,7 @@ pub fn main_loop() {
         ),
     ];
 
-    loop {
+    'main: loop {
         let mut d = rl.begin_drawing(&thread);
         if d.window_should_close() || d.is_key_pressed(KeyboardKey::KEY_ESCAPE) {
             break;
@@ -91,7 +91,6 @@ pub fn main_loop() {
                 Some(i) => Some((i + 1) % state.last_index),
                 None => Some(0),
             };
-            println!("selected: {:?}, last_index: {}", state.selected, state.last_index);
         }
 
         for block in &mut blocks {
@@ -102,6 +101,25 @@ pub fn main_loop() {
         }
         for button in buttons.iter() {
             button.draw(&mut d);
+            if button.is_clicked(&mut d) {
+                match button.text.as_str() {
+                    "Exit" => break 'main,
+                    "Run" => {
+                        for block in &blocks {
+                            match block {
+                                Block::VariableAssignment(va) => {
+                                    println!("{} = {}", va.name, va.value)
+                                }
+                                Block::FunctionCall(fc) => {
+                                    println!("{}({})", fc.name, fc.args.len())
+                                }
+                            }
+                        }
+                    }
+                    "Add" => {}
+                    _ => {}
+                }
+            }
         }
     }
 }
