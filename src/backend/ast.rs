@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{execute_function_call, get_var_value, HashMap, Variable};
+use super::{execute_function_call, get_var_value, HashMap, Variable};
 
 #[derive(Clone)]
 pub enum AstNode {
@@ -26,7 +26,6 @@ pub struct Sequence {
 //    Root(Vec<AstNode>),
 //    Function(Vec<AstNode>),
 //}
-
 
 #[derive(Clone)]
 pub enum ValueGetter {

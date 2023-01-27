@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
-use crate::{
-    execute_native_function, backend::execution::execute_sequence, is_native_function, FunctionCall, FunctionSignature,
-    FunctionsMap, HashMap, ValueGetter, Variable, VariablesMap,
+use super::{
+    execute_native_function, execution::execute_sequence, is_native_function, FunctionCall,
+    FunctionSignature, FunctionsMap, HashMap, ValueGetter, Variable, VariablesMap,
 };
 
 pub fn declare_function(function: FunctionSignature, functions: &mut FunctionsMap) {

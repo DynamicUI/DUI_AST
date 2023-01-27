@@ -1,11 +1,11 @@
-use super::{Block, State, TextInput, SEQUENCER_POS};
+use super::{Block, State};
 use raylib::prelude::*;
 
 pub struct FunctionCall {
     pub name: String,
     pub args: Vec<Block>,
     pub block_index: usize,
-    pub name_input: TextInput,
+    //pub name_input: TextInput,
 }
 
 impl FunctionCall {
@@ -16,18 +16,11 @@ impl FunctionCall {
             name: "print".to_string(),
             args: vec![],
             block_index: state.n_blocks - 1,
-            name_input: TextInput::new(
-                Vector2::new(SEQUENCER_POS.0 + 10., SEQUENCER_POS.1 + 10.),
-                Vector2::new(100., 30.),
-                Color::WHITE,
-                Color::BLACK,
-                state.last_index - 1,
-            ),
         }
     }
 
     pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
         d.draw_rectangle(0, 0, 100, 100, Color::RED);
-        self.name_input.draw(&mut self.name, d, state);
+        //self.name_input.draw(&mut self.name, d, state);
     }
 }

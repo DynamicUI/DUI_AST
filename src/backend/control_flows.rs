@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
-use crate::{
-    backend::execution::execute_sequence, execute_function_call, FunctionCall, FunctionsMap,
-    Sequence, Value, VariablesMap,
+use super::{
+    execute_function_call, execution::execute_sequence, FunctionCall, FunctionsMap, Sequence,
+    Value, VariablesMap,
 };
 
 pub fn while_loop(

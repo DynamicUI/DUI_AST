@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{execute_function_call, FunctionsMap, ValueGetter, VariablesMap};
+use super::{execute_function_call, FunctionsMap, ValueGetter, VariablesMap};
 use core::fmt::Display;
 use core::fmt::Formatter;
 use std::any::{Any, TypeId};

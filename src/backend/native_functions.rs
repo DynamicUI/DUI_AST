@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{FunctionCall, FunctionsMap, Value, VarType, Variable, VariablesMap};
+use super::{FunctionCall, FunctionsMap, Value, VarType, Variable, VariablesMap};
 
 #[allow(dead_code, unused_variables)]
 pub fn comparaison(left: Variable, operator: &str, right: Variable) -> bool {
