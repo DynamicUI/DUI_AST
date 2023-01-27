@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use crate::{
-    execute_native_function, execute_sequence, is_native_function, FunctionCall, FunctionSignature,
+    execute_native_function, backend::execution::execute_sequence, is_native_function, FunctionCall, FunctionSignature,
     FunctionsMap, HashMap, ValueGetter, Variable, VariablesMap,
 };
 

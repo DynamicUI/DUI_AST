@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use crate::{execute_function_call, get_var_value, HashMap, Variable};
 
 #[derive(Clone)]
