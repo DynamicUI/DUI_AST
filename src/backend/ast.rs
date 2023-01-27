@@ -9,10 +9,24 @@ pub enum AstNode {
     FunctionCall(FunctionCall),
 }
 
+//#[derive(Clone)]
+//pub enum SequenceType {
+//    Loop,
+//    Root,
+//    Function,
+//}
 #[derive(Clone)]
 pub struct Sequence {
     pub sequence: Vec<AstNode>,
+    //pub sequence_type: SequenceType
 }
+
+//pub enum Sequence {
+//    Loop(Vec<AstNode>),
+//    Root(Vec<AstNode>),
+//    Function(Vec<AstNode>),
+//}
+
 
 #[derive(Clone)]
 pub enum ValueGetter {

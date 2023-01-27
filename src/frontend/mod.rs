@@ -25,6 +25,20 @@ pub enum Block {
     FunctionCall(FunctionCall),
 }
 
+macro_rules! block_match {
+    ($block:ident, $d:ident, $state:ident, $($type:ident),*) => {
+        match $block {
+            $(Block::$type(va) => va.draw($d, $state)),*
+        }
+    };
+}
+
+impl Block {
+    pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
+        block_match!(self, d, state, VariableAssignment, FunctionCall);
+    }
+}
+
 /*
 pub enum ValueGetter {
     Variable(String),
@@ -94,10 +108,7 @@ pub fn main_loop() {
         }
 
         for block in &mut blocks {
-            match block {
-                Block::VariableAssignment(va) => va.draw(&mut d, &mut state),
-                Block::FunctionCall(fc) => fc.draw(&mut d, &mut state),
-            }
+            block.draw(&mut d, &mut state);
         }
         for button in buttons.iter() {
             button.draw(&mut d);
