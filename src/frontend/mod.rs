@@ -83,7 +83,7 @@ pub fn draw_variable(d: &mut RaylibDrawHandle) {
         0,
         Color::new(gray_level, gray_level, gray_level, 255),
     );
-    let text_input = TextInput::default();
+    let mut text_input = TextInput::default();
     text_input.draw(d);
 }
 
