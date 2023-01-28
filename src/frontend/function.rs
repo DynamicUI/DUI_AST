@@ -28,12 +28,12 @@ impl FunctionCall {
         }
     }
 
+    pub fn update(&mut self, rl: &mut RaylibHandle, state: &mut State) {
+        //self.name_input.update(&mut self.name, d, state);
+    }
+
     pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
         d.draw_rectangle(0, 0, 100, 100, Color::RED);
         //self.name_input.draw(&mut self.name, d, state);
-    }
-
-    pub fn update(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
-        //self.name_input.update(&mut self.name, d, state);
     }
 }

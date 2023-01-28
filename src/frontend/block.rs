@@ -30,7 +30,7 @@ impl Block {
 
     pub fn draw(&self, d: &mut RaylibDrawHandle) {
         d.draw_rectangle_rounded(self.get_rectangle(), 0.2, 2, self.color);
-        d.draw_rectangle_rounded_lines(self.get_rectangle(), 0.2, 2, 2, self.color);
+        d.draw_rectangle_rounded_lines(self.get_rectangle(), 0.2, 2, 2, Color::BLACK);
     }
 
     pub fn get_rectangle(&self) -> Rectangle {

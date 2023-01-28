@@ -13,20 +13,17 @@ impl VariableAssignment {
     pub fn new(position: Vector2, input_index: usize) -> Self {
         Self {
             name: String::new(),
-            name_input: TextInput::new(
-                Vector2::new(position.x + 10., position.y + 20.),
-                input_index,
-            ),
+            name_input: TextInput::new(Vector2::new(position.x + 10., position.y + 20.), input_index),
             block: Block::new(position, DEFAULT_SIZE, Color::LIGHTGRAY),
         }
+    }
+
+    pub fn update(&mut self, rl: &mut RaylibHandle, state: &mut State) {
+        self.name_input.update(state);
     }
 
     pub fn draw(&mut self, d: &mut RaylibDrawHandle, state: &mut State) {
         self.block.draw(d);
         self.name_input.draw(d, state);
-    }
-
-    pub fn update(&mut self, _d: &mut RaylibDrawHandle, state: &mut State) {
-        self.name_input.update(state);
     }
 }
