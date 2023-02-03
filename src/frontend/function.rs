@@ -14,7 +14,7 @@ pub struct FunctionCall {
 
 impl FunctionCall {
     pub fn new(state: &mut State) -> Self {
-        state.n_blocks += 1;
+        //state.n_blocks += 1;
         state.last_index += 1;
         Self {
             block: Block::new(
@@ -24,7 +24,8 @@ impl FunctionCall {
             ),
             name: "print".to_string(),
             args: vec![],
-            block_index: state.n_blocks - 1,
+            block_index: state.last_index,
+            //block_index: state.n_blocks - 1,
         }
     }
 

@@ -111,7 +111,7 @@ pub fn handle_buttons(buttons: &Vec<Button>,
     for button in buttons {
         if button.is_clicked(rl) {
             match button.text.as_str() {
-                "Exit" => should_exit = true,
+                //"Exit" => should_exit = true,
                 "Run" => {
                     for block in &mut *blocks {
                         match block {
